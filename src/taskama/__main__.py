@@ -75,6 +75,10 @@ class Root(Window):
 
 		self.create_widgets()
 
+		self.s_memory = smoothener(); next(self.s_memory)
+		self.s_cpu = smoothener(); next(self.s_cpu)
+		self.s_battery = smoothener(); next(self.s_battery)
+
 	def create_widgets(self: Any) -> None:
 		f_params = {
 			'padding': self.settings.get('frame-padding', 5),
@@ -99,7 +103,9 @@ class Root(Window):
 		self.f_battery.grid(column=0, row=0)
 
 	def update_widgets(self: Any) -> None:
-		
+		self.cpu = self.s_cpu.send(psutil.cpu_percent)
+		self.battery = self.s_battery.send(psutil.sensors_battery().percent)
+		self.memory = self.s_memory.send(psutil.)
 
 	def update(self:Any):
 		self.update_widgets()
