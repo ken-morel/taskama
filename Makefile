@@ -19,7 +19,10 @@ test39:
 test310:
 	docker-compose run --rm test310
 
-ci: build lint test test37 test38 test38 test39 test310
+test311:
+	docker-compose run --rm test311
+
+ci: build lint test test37 test38 test38 test39 test310 test311
 
 sdist:
 	docker-compose run --rm dev python setup.py sdist

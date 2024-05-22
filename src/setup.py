@@ -2,7 +2,7 @@ from pathlib import Path
 
 from setuptools import setup, find_packages
 
-from pip_package_template_docker import __version__
+from taskama import __version__
 
 project_dir = Path(__file__).parent
 try:
@@ -10,7 +10,11 @@ try:
 except FileNotFoundError:
     long_description = ''
 
-deps = ()
+deps = (
+    'psutil',
+    'ttkbootstrap',
+    'pyoload',
+)
 
 extra_flake8 = (
     'flake8',
@@ -36,14 +40,14 @@ extra_ci = (
 )
 
 setup(
-    name='pip-package-template-docker',
+    name='taskama',
     version=__version__,
     packages=find_packages(exclude=['tests', 'tests.*']),
-    url='https://github.com/MichaelKim0407/pip-package-template-docker',
+    url='https://github.com/ken-morel/taskama',
     license='MIT',
-    author='Zheng Jin',
-    author_email='mkim0407@gmail.com',
-    description='Project template for Dockerized pip package development.',
+    author='ken-morel',
+    author_email='engonken8@gmail.com',
+    description='Python memory and cpu usage monitor.',
     long_description=long_description,
     long_description_content_type='text/markdown',
 
@@ -61,7 +65,7 @@ setup(
         # 'Development Status :: 1 - Planning',
         # 'Development Status :: 2 - Pre-Alpha',
         # 'Development Status :: 3 - Alpha',
-        # 'Development Status :: 4 - Beta',
+        'Development Status :: 4 - Beta',
         # 'Development Status :: 5 - Production/Stable',
         # 'Development Status :: 6 - Mature',
         # 'Development Status :: 7 - Inactive',
