@@ -8,6 +8,7 @@ import psutil  # system calls to get cpu, memory and battery usage
 
 from pathlib import Path
 import json  # for parsing the sattings file
+import time
 
 
 type JSONSerializable = str | int | float | list | tuple  # type for json
@@ -66,6 +67,7 @@ class Settings(dict):
 
 class Root(Window):
 	settings: Settings
+	destroyed: bool = False
 	@annotate
 	def __init__(self:Any, settings: Cast(Settings) = 'taskama-settings.json'):
 		self.settings = settings
@@ -95,24 +97,32 @@ class Root(Window):
 		self.f_cpu = LabelFrame(self, text="cpu", **f_params)
 		self.pr_cpu = Progressbar(self.f_cpu, **pr_params)
 		self.pr_cpu.grid(column=0, row=0)
-		self.f_cpu.grid(column=0, row=0)
+		self.f_cpu.grid(column=0, row=1)
 
 		self.f_battery = LabelFrame(self, text="battery", **f_params)
 		self.pr_battery = Progressbar(self.f_battery, **pr_params)
 		self.pr_battery.grid(column=0, row=0)
-		self.f_battery.grid(column=0, row=0)
+		self.f_battery.grid(column=0, row=2)
 
 	def update_widgets(self: Any) -> None:
-		self.cpu = self.s_cpu.send(psutil.cpu_percent)
+		self.cpu = self.s_cpu.send(psutil.cpu_percent())
 		self.battery = self.s_battery.send(psutil.sensors_battery().percent)
-		self.memory = self.s_memory.send(psutil.)
+		self.memory = self.s_memory.send(psutil.virtual_memory().percent)
+
+		self.pr_cpu['value'] = self.cpu
+		self.pr_memory['value'] = self.memory
+		self.pr_battery['value'] = self.battery
 
 	def update(self:Any):
-		self.update_widgets()
-		super().__update__()
+		if not self.destroyed:
+			self.update_widgets()
+		super().update()
+	def destroy(self):
+		self.destroyed = True
+		super().destroy()
 
 @annotate
-def smoothener(stack_size: int = 10):
+def smoothener(stack_size: int = 50):
 	stack = [0]
 	while True:
 		value = yield sum(stack) / len(stack)
@@ -123,4 +133,6 @@ def smoothener(stack_size: int = 10):
 
 root = Root()
 
-root.mainloop()
+while True:
+	root.update()
+	time.sleep(0.1)
