@@ -43,7 +43,7 @@ class Settings(dict):
 
 		loads or reloads the setting file into the Settings dict-like object
 		'''
-		self.empty()
+		self.clear()  # remove already contained values
 		try:
 			json_text = self.path.read_text()
 			data = json.loads(json_text)
@@ -64,28 +64,42 @@ class Settings(dict):
 			raise Settings.CouldNotSaveError(self.path) from e
 
 
-class Root(Frame):
+class Root(Window):
 	settings: Settings
 	@annotate
 	def __init__(self:Any, settings: Cast(Settings) = 'taskama-settings.json'):
+		self.settings = settings
 		super().__init__(
-			themename=self.settings.get('themename', 'vapor'),
+			themename=settings.get('themename', 'vapor'),
 		)
 
 		self.create_widgets()
 
 	def create_widgets(self: Any) -> None:
-		self.pr_memory = ProgressBar(self)
+		f_params = {
+			'padding': self.settings.get('frame-padding', 5),
+		}
+		pr_params = {
+			'length': self.settings.get('bar-length', 100)
+		}
+
+		self.f_memory = LabelFrame(self, text="memory", **f_params)
+		self.pr_memory = Progressbar(self.f_memory, **pr_params)
 		self.pr_memory.grid(column=0, row=0)
+		self.f_memory.grid(column=0, row=0)
 
-		self.pr_battery = ProgressBar(self)
-		self.pr_battery.grid(column=0, row=0)
-
-		self.pr_cpu = ProgressBar(self)
+		self.f_cpu = LabelFrame(self, text="cpu", **f_params)
+		self.pr_cpu = Progressbar(self.f_cpu, **pr_params)
 		self.pr_cpu.grid(column=0, row=0)
+		self.f_cpu.grid(column=0, row=0)
+
+		self.f_battery = LabelFrame(self, text="battery", **f_params)
+		self.pr_battery = Progressbar(self.f_battery, **pr_params)
+		self.pr_battery.grid(column=0, row=0)
+		self.f_battery.grid(column=0, row=0)
 
 	def update_widgets(self: Any) -> None:
-		pass
+		
 
 	def update(self:Any):
 		self.update_widgets()
